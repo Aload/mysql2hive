@@ -1,0 +1,8 @@
+{
+  "db_type": "mysql",
+  "ip_addr": "192.168.29.194",
+  "db_name": "iebm_platform_v2_db_yf_test,information_schema",
+  "db_user": "zy",
+  "db_pwd": "meimima",
+  "output_file": "D://hive-sql"
+}
