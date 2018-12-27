@@ -42,7 +42,7 @@ func main() {
 			sql := fmt.Sprintf("select %v, %v, %v, %v from COLUMNS where TABLE_SCHEMA='%v' and TABLE_NAME='%v'", "COLUMN_NAME", "DATA_TYPE", "COLUMN_COMMENT", "COLUMN_TYPE", "iebm_platform_v2_db_yf_test", string(col))
 			slices, _ := db1.Query(sql)
 			len := len(slices)
-			var creatDb string = "CREATE TABLE IF NOT EXISTS zhyb_operation;"
+			var creatDb string = "CREATE DATABASE IF NOT EXISTS zhyb_operation;"
 			creatTb := fmt.Sprintf("CREATE TABLE IF NOT EXISTS zhyb_operation.%v (\t", string(col))
 			initStr := fmt.Sprintf("%v \r\n %v", creatDb, creatTb)
 			//长度一致
