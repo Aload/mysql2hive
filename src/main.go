@@ -43,7 +43,7 @@ func main() {
 			slices, _ := db1.Query(sql)
 			len := len(slices)
 			var creatDb string = "CREATE TABLE IF NOT EXISTS zhyb_operation;"
-			creatTb := fmt.Sprintf("CREATE TABLE IF NOT EXISTS %v (\t", string(col))
+			creatTb := fmt.Sprintf("CREATE TABLE IF NOT EXISTS zhyb_operation.%v (\t", string(col))
 			initStr := fmt.Sprintf("%v \r\n %v", creatDb, creatTb)
 			//长度一致
 			for _, column := range slices {
@@ -66,7 +66,7 @@ func main() {
 			hiveSql := fmt.Sprintf("%v \r\n %v", initStr, footerStr)
 			fmt.Println("--------------------------------------------------")
 			fmt.Println(hiveSql)
-			ioutil.WriteFile(conf.OutputFile+"/"+string(col)+".sql", []byte(hiveSql), os.FileMode(os.ModeAppend))
+			ioutil.WriteFile(conf.OutputFile+"/"+string(col)+".hql", []byte(hiveSql), os.FileMode(os.ModeAppend))
 			fmt.Println("--------------------------------------------------")
 		}(col)
 	}
@@ -76,7 +76,7 @@ func main() {
 /**
  *db struct change to hive
 *	create database if not exists bdm;
-	create external table if not exists bdm.itcast_bdm_user(
+	create external table if not exists bdm.user(
 	user_id string			    ,--用户ID
 	user_name string			,--用户登陆名
 	is_married bigint			,--婚姻状况
@@ -85,12 +85,24 @@ func main() {
 	profession string			--职业
 	) partitioned by (dt string)
 	row format delimited fields terminated by ',';
-	alter table bdm.itcast_bdm_user add partition (dt='$1') location '/business/itcast_bdm_user/$1';
-	"
-		'datetime',
-		'timestamp',
-		'time',
-		'date'
+: TINYINT
+  | SMALLINT
+  | INT
+  | BIGINT
+  | BOOLEAN
+  | FLOAT
+  | DOUBLE
+  | DOUBLE PRECISION -- (Note: Available in Hive 2.2.0 and later)
+  | STRING
+  | BINARY      -- (Note: Available in Hive 0.8.0 and later)
+  | TIMESTAMP   -- (Note: Available in Hive 0.8.0 and later)
+  | DECIMAL     -- (Note: Available in Hive 0.11.0 and later)
+  | DECIMAL(precision, scale)  -- (Note: Available in Hive 0.13.0 and later)
+  | DATE        -- (Note: Available in Hive 0.12.0 and later)
+  | VARCHAR     -- (Note: Available in Hive 0.12.0 and later)
+  | CHAR        -- (Note: Available in Hive 0.13.0 and later)
+
+`ip` string COMMENT 'remote real ip',
 */
 func formatDB2Hive(columnName, dataType, comment, columnType string, count, lens int) string {
 	if columnName == "" || dataType == "" || len(columnName) == 0 || len(dataType) == 0 {
@@ -112,8 +124,8 @@ func formatDB2Hive(columnName, dataType, comment, columnType string, count, lens
 		return join
 	}
 	if lens == count {
-		return strings.Join([]string{join, comment}, "\t--")
+		return strings.Join([]string{join, "'"+comment+"'"}, "\tCOMMENT\t")
 	} else {
-		return strings.Join([]string{join, comment}, ",\t--")
+		return strings.Join([]string{join, "'"+comment+"',"}, "\tCOMMENT\t")
 	}
 }
